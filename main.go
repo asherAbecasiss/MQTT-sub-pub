@@ -18,6 +18,9 @@ var messagePubHandler mqtt.MessageHandler = func(client mqtt.Client, msg mqtt.Me
 	fmt.Printf("Received message: %s from topic: %s\n", msg.Payload(), msg.Topic())
 
 	filenamePrefix := filepath.Join("./data", buildFileName())
+	str := strings.Replace(msg.Topic(), "/", "_", -1)
+
+	filenamePrefix += str
 	filenamePrefix += ".json"
 
 	err := ioutil.WriteFile(filenamePrefix, msg.Payload(), 0644)
@@ -69,8 +72,16 @@ func publish(client mqtt.Client) {
 }
 
 func sub(client mqtt.Client) {
-	topic := "topic/test"
-	token := client.Subscribe(topic, 1, nil)
+	
+	t := make(map[string]byte)
+
+	t[""] = 1
+	t[""] = 1
+	t[""] = 1
+
+	
+	token := client.SubscribeMultiple(t, nil)
+	//token := client.Subscribe(topic, 1, nil)
 	token.Wait()
 	fmt.Printf("Subscribed to topic: %s", topic)
 }
